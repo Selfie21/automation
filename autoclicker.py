@@ -7,6 +7,8 @@ import random
 color_grey = [43, 47, 54]
 color_yellow = [240, 185, 11]
 color_yellow_two = [248, 209, 47]
+color_green = [10, 181, 118]
+
 base_again = [1385, 445]
 base_end = [1420, 445]
 base_cnt = [1205, 301]
@@ -42,7 +44,7 @@ def get_colour(coords):
 	return pyautogui.pixel(coords[0],coords[1])
 
 def check_for_colour_change(coords):
-	while not ((get_colour(coords)[1] > 100) and (get_colour(coords)[1] < 200)):
+	while not (check_matching_array(get_colour(base_result), color_green)):
 		time.sleep(0.01)
 	return True
 	
@@ -50,7 +52,6 @@ def check_for_colour_change(coords):
 #Timeout Handler
 def handler(signum, frame):
 	raise Exception("Timeout")
-
 
 while True:
 	randomizer_time = random.randint(0,15)
@@ -63,14 +64,20 @@ while True:
 	
 	#ending Battle
 	signal.signal(signal.SIGALRM, handler)
-	signal.alarm(300)
+	signal.alarm(150)
 
 	try:
 		if check_for_colour_change(base_result):
 			print("I found green clicking now! Click routine can continue;")
-			short_click(base_end)
+			current_color = get_colour(base_again)
+			if not(check_matching_array(current_color, color_yellow) or check_matching_array(current_color, color_yellow_two)):
+				short_click(base_end)
+			else:
+				raise Exception("Timeout")
 	except Exception: 
 		print("Timeout Occurred;")
 	signal.alarm(0)
 	
 	time.sleep(10 + randomizer_time)
+
+print(str(get_colour(base_result)))
